@@ -46,7 +46,17 @@
           </el-select>
         </el-form-item>
         <el-form-item label="回复文本">
-          <el-input v-model="form.replyText" type="textarea" :rows="4" />
+          <div class="toolbar">
+            <el-button size="small" @click="insertTag('b')">加粗</el-button>
+            <el-button size="small" @click="insertTag('i')">斜体</el-button>
+            <el-button size="small" @click="insertTag('u')">下划线</el-button>
+            <el-button size="small" @click="insertTag('s')">删除线</el-button>
+            <el-button size="small" @click="insertTag('code')">等宽</el-button>
+            <el-button size="small" @click="insertTag('spoiler')">剧透</el-button>
+            <el-button size="small" @click="insertLink">链接</el-button>
+          </div>
+          <el-input ref="textareaRef" v-model="form.replyText" type="textarea" :rows="6" />
+          <div class="hint">支持 HTML 格式：&lt;b&gt;粗体&lt;/b&gt; &lt;i&gt;斜体&lt;/i&gt; &lt;a href="url"&gt;链接&lt;/a&gt;</div>
         </el-form-item>
         <el-form-item label="回复图片">
           <el-upload :auto-upload="false" :on-change="handleImageChange" :show-file-list="false">
@@ -83,6 +93,7 @@ const dialogVisible = ref(false);
 const isEdit = ref(false);
 const saving = ref(false);
 const matchTypeMap: any = { exact: '精确', contains: '包含', regex: '正则' };
+const textareaRef = ref();
 
 const form = ref({
   trigger: '',
@@ -126,6 +137,35 @@ const handleImageChange = async (file: any) => {
   } catch {
     ElMessage.error('图片上传失败');
   }
+};
+
+const insertTag = (tag: string) => {
+  const textarea = textareaRef.value?.textarea;
+  if (!textarea) return;
+
+  const start = textarea.selectionStart;
+  const end = textarea.selectionEnd;
+  const selectedText = form.value.replyText.substring(start, end) || '文本';
+  const before = form.value.replyText.substring(0, start);
+  const after = form.value.replyText.substring(end);
+
+  form.value.replyText = `${before}<${tag}>${selectedText}</${tag}>${after}`;
+};
+
+const insertLink = () => {
+  const url = prompt('请输入链接地址：', 'https://');
+  if (!url) return;
+
+  const textarea = textareaRef.value?.textarea;
+  if (!textarea) return;
+
+  const start = textarea.selectionStart;
+  const end = textarea.selectionEnd;
+  const selectedText = form.value.replyText.substring(start, end) || '链接文本';
+  const before = form.value.replyText.substring(0, start);
+  const after = form.value.replyText.substring(end);
+
+  form.value.replyText = `${before}<a href="${url}">${selectedText}</a>${after}`;
 };
 
 const handleSave = async () => {
@@ -174,5 +214,13 @@ onMounted(() => {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
+}
+.toolbar {
+  margin-bottom: 8px;
+}
+.hint {
+  font-size: 12px;
+  color: #999;
+  margin-top: 4px;
 }
 </style>
