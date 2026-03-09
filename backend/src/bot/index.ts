@@ -41,13 +41,16 @@ export class Bot {
   }
 
   private isMatch(text: string, trigger: string, matchType: string): boolean {
+    const lowerText = text.toLowerCase();
+    const lowerTrigger = trigger.toLowerCase();
+
     if (matchType === 'exact') {
-      return text === trigger;
+      return lowerText === lowerTrigger;
     } else if (matchType === 'contains') {
-      return text.includes(trigger);
+      return lowerText.includes(lowerTrigger);
     } else if (matchType === 'regex') {
       try {
-        return new RegExp(trigger).test(text);
+        return new RegExp(trigger, 'i').test(text);
       } catch {
         return false;
       }
