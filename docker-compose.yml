@@ -10,6 +10,7 @@ services:
       - BOT_TOKEN=${BOT_TOKEN}
       - JWT_SECRET=${JWT_SECRET}
       - ADMIN_CHAT_ID=${ADMIN_CHAT_ID}
+      - ALLOWED_CHAT_ID=${ALLOWED_CHAT_ID}
       - PORT=3000
     volumes:
       - ./data:/app/data

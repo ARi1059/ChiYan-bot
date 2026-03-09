@@ -11,6 +11,13 @@ export class Bot {
 
   private setupHandlers() {
     this.bot.on('text', async (ctx) => {
+      const chatId = ctx.chat.id.toString();
+      const allowedChatId = process.env.ALLOWED_CHAT_ID;
+
+      if (allowedChatId && chatId !== allowedChatId) {
+        return;
+      }
+
       const text = ctx.message.text;
       const keyword = await this.matchKeyword(text);
 
